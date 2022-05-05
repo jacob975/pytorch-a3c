@@ -1,3 +1,6 @@
+# Note
+I forked this repository from [ikostrikov](https://github.com/ikostrikov/pytorch-a3c) and added some comment for better understanding as a pytorch beginner.
+
 # pytorch-a3c
 
 This is a PyTorch implementation of Asynchronous Advantage Actor Critic (A3C) from ["Asynchronous Methods for Deep Reinforcement Learning"](https://arxiv.org/pdf/1602.01783v1.pdf).
