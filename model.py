@@ -28,15 +28,18 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
+# The actor and critic share a model.
+# No replay buffer and I do not know why.
 class ActorCritic(torch.nn.Module):
     def __init__(self, num_inputs, action_space):
         super(ActorCritic, self).__init__()
+        # nn.Conv2d(input channel, output channel, kernel size, etc.)
         self.conv1 = nn.Conv2d(num_inputs, 32, 3, stride=2, padding=1)
-        self.conv2 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
+        self.conv2 = nn.Conv2d(32, 32, 3, stride=2, padding=1) # input img with 32 channels and output 32 channels with 3x3 kernels
         self.conv3 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
         self.conv4 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
 
-        self.lstm = nn.LSTMCell(32 * 3 * 3, 256)
+        self.lstm = nn.LSTMCell(32 * 3 * 3, 256) # (input_size, hidden_size)
 
         num_outputs = action_space.n
         self.critic_linear = nn.Linear(256, 1)
@@ -62,8 +65,9 @@ class ActorCritic(torch.nn.Module):
         x = F.elu(self.conv3(x))
         x = F.elu(self.conv4(x))
 
-        x = x.view(-1, 32 * 3 * 3)
-        hx, cx = self.lstm(x, (hx, cx))
+        x = x.view(-1, 32 * 3 * 3) # tensor.view is identical to np.reshape
+        hx, cx = self.lstm(x, (hx, cx)) # takes (x, h, c) and output (h, c)
         x = hx
 
+        # The actor and critic shared a model
         return self.critic_linear(x), self.actor_linear(x), (hx, cx)
